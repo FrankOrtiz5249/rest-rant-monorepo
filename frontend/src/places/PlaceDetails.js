@@ -35,17 +35,17 @@ function PlaceDetails() {
 		history.push('/places')
 	}
 
-	async function deleteComment(deletedComment) {
-		await fetch(`http://localhost:5000/places/${place.placeId}/comments/${deletedComment.commentId}`, {
-			method: 'DELETE'
-		})
 
-		setPlace({
-			...place,
-			comments: place.comments
-				.filter(comment => comment.commentId !== deletedComment.commentId)
-		})
-	}
+async function deleteComment(deletedComment) {
+    const response = await fetch(`http://localhost:5000/places/${place.placeId}/comments/${deletedComment.commentId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(commentAttributes)
+    })
+}
 
 	async function createComment(commentAttributes) {
 		const response = await fetch(`http://localhost:5000/places/${place.placeId}/comments`, {
@@ -67,6 +67,7 @@ function PlaceDetails() {
 		})
 
 	}
+
 
 
 
@@ -101,6 +102,20 @@ function PlaceDetails() {
 		})
 	}
 
+	let placeActions = null
+
+	if (currentUser?.role === 'admin') {
+		placeActions = (
+			<>
+				<a className="btn btn-warning" onClick={editPlace}>
+					Edit
+				</a>
+				<button type="submit" className="btn btn-danger" onClick={deletePlace}>
+					Delete
+				</button>
+			</>
+		)
+	}
 
 	return (
 		<main>
